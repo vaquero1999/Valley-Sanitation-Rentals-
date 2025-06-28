@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Valley Sanitation - Oficina</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      display: none;
+      padding: 20px;
+    }
+    .visible {
+      display: block;
+    }
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .login-box {
+      background: #1e1e1e;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+    input, button, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: none;
+      font-size: 1em;
+      background: #2a2a2a;
+      color: white;
+    }
+    button {
+      background-color: #ff1a1a;
+      cursor: pointer;
+    }
+    h2 {
+      color: #ff4c4c;
+    }
+    .section-title {
+      color: #ff1a1a;
+      margin-top: 30px;
+    }
+    .recordatorio {
+      background: #333;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-container" id="loginPage">
+  <div class="login-box">
+    <h2>Valley Sanitation</h2>
+    <p>Bienvenido. Ingresa tu usuario:</p>
+    <input type="text" id="username" placeholder="Nombre de usuario">
+    <p>Selecciona tu rol:</p>
+    <button onclick="redirect('office')">👩‍💼 Personal de Oficina</button>
+    <button onclick="alert('Este panel aún no está disponible')">🔧 Jefe de Equipo</button>
+  </div>
+</div>
+
+<div class="container" id="officePanel">
+  <h2>👩‍💼 Panel de Oficina</h2>
+  <p>Bienvenido, <span id="userLabel"></span></p><button onclick="volverInicio()">🔙 Volver al inicio</button>
+
+  <div>
+    <h3 class="section-title">📝 Nueva Orden</h3>
+    <input type="text" id="ordenCliente" placeholder="Nombre del cliente">
+    <input type="text" id="ordenUnidades" placeholder="Unidades (ej: 3 baños)">
+    <input type="text" id="ordenDireccion" placeholder="Dirección">
+    <input type="date" id="ordenFecha">
+    <button onclick="guardarOrden()">Guardar Orden</button>
+  </div>
+
+  <div>
+    <h3 class="section-title">📞 Llamada de Cliente</h3>
+    <input type="text" id="llamadaCliente" placeholder="Nombre del cliente">
+    <input type="time" id="llamadaHora">
+    <textarea id="llamadaMotivo" placeholder="Motivo de la llamada"></textarea>
+    <button onclick="guardarLlamada()">Guardar Llamada</button>
+  </div>
+
+  <div>
+    <h3 class="section-title">⏰ Recordatorios Pendientes</h3>
+    <div id="recordatorios"></div>
+  </div>
+</div>
+
+<script>
+let llamadas = [];
+
+function redirect(role) {
+  const user = document.getElementById('username').value.trim();
+  if (!user) {
+    alert("Por favor, ingresa un nombre de usuario.");
+    return;
+  }
+
+  if (role === "office") {
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("officePanel").classList.add("visible");
+    document.getElementById("userLabel").textContent = user;
+  }
+}
+
+function guardarOrden() {
+  const cliente = document.getElementById("ordenCliente").value;
+  const unidades = document.getElementById("ordenUnidades").value;
+  const direccion = document.getElementById("ordenDireccion").value;
+  const fecha = document.getElementById("ordenFecha").value;
+  if (!cliente || !unidades || !direccion || !fecha) {
+    alert("Por favor completa todos los campos de la orden.");
+    return;
+  }
+  alert("✅ Orden guardada para " + cliente);
+}
+
+function guardarLlamada() {
+  const cliente = document.getElementById("llamadaCliente").value;
+  const hora = document.getElementById("llamadaHora").value;
+  const motivo = document.getElementById("llamadaMotivo").value;
+  const fecha = new Date();
+  if (!cliente || !hora || !motivo) {
+    alert("Completa todos los campos de la llamada.");
+    return;
+  }
+
+  llamadas.push({ cliente, motivo, hora, fecha });
+  mostrarRecordatorios();
+  alert("📌 Llamada registrada.");
+}
+
+function mostrarRecordatorios() {
+  const contenedor = document.getElementById("recordatorios");
+  contenedor.innerHTML = "";
+  const ahora = new Date();
+
+  llamadas.forEach((llamada, i) => {
+    const diff = (ahora - llamada.fecha) / (1000 * 60 * 60 * 24);
+    if (diff >= 3) {
+      const div = document.createElement("div");
+      div.className = "recordatorio";
+      div.innerText = `⚠️ Llamar a ${llamada.cliente} (Motivo: ${llamada.motivo})`;
+      contenedor.appendChild(div);
+    }
+  });
+}
+</script>
+
+</body>
+</html>
